@@ -142,6 +142,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.scoplots.com",
     "https://mintginger.in",
     "https://www.mintginger.in",
+    "https://ziprealtors.com"
 ]
 
 MEDIA_URL = '/media/'
@@ -156,6 +157,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.mintginger.in",
     "https://scoplots.com",
     "https://www.scoplots.com",
+    "api.ziprealtors.com"
 ]
 
 
