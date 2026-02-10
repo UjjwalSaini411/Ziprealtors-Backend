@@ -157,7 +157,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.mintginger.in",
     "https://scoplots.com",
     "https://www.scoplots.com",
-    "api.ziprealtors.com"
+    "https://api.ziprealtors.com"
 ]
 
 
