@@ -28,9 +28,14 @@ load_dotenv(BASE_DIR / ".env")  # ensures env vars exist for runserver too
 SECRET_KEY = 'django-insecure-p$da#km4xsc0xy0r+#s6&1#dwxmk9^^@i&1rg%6%h@p)r-z+aw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS for hosting
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '*')
+if allowed_hosts_env == '*':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
 
 
 # Application definition
@@ -126,27 +131,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://scoplots.com",
-    "https://www.scoplots.com",
-    "https://mintginger.in",
-    "https://www.mintginger.in",
-    "https://ziprealtors.com"
-]
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -157,8 +147,13 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.mintginger.in",
     "https://scoplots.com",
     "https://www.scoplots.com",
+    "https://ziprealtors.com",
+    "https://www.ziprealtors.com",
     "https://api.ziprealtors.com"
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # --- Salesforce (env-driven) ---
