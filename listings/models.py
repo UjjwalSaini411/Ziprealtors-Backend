@@ -5,6 +5,11 @@ from django.conf import settings
 from django.db.models import F   # 👈 add this if you'll use F later in model methods
 import os
 
+
+def developer_logo_upload_to(instance, filename):
+    slug = instance.slug or slugify(instance.name)[:50]
+    return os.path.join('developers', slug, 'logo', filename)
+
 def project_hero_upload_to(instance, filename):
     # e.g., projects/<slug>/hero/<filename>
     slug = instance.slug or slugify(instance.name)[:50]
@@ -16,17 +21,102 @@ def project_image_upload_to(instance, filename):
     return os.path.join('projects', slug, 'images', f"{instance.order}-{filename}")
 
 
+# ─────────────────────────────────────────────────────────
+# DEVELOPER MODEL
+# ─────────────────────────────────────────────────────────
+class Developer(models.Model):
+    """Real-estate developer / builder entity."""
+
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        help_text="SEO-friendly URL key, e.g. 'dlf-limited'",
+    )
+
+    # ── Branding ──────────────────────────────────────────
+    logo_file = models.ImageField(
+        upload_to=developer_logo_upload_to, blank=True, null=True, max_length=500
+    )
+    logo_url = models.URLField(blank=True, help_text="External logo URL (fallback)")
+
+    # ── Info ──────────────────────────────────────────────
+    tagline = models.CharField(max_length=500, blank=True)
+    description = models.TextField(blank=True)
+    established_year = models.PositiveSmallIntegerField(
+        null=True, blank=True, help_text="Year developer was founded"
+    )
+    headquarters = models.CharField(max_length=255, blank=True)
+    website = models.URLField(blank=True)
+    rera_developer_id = models.CharField(
+        max_length=200, blank=True, help_text="RERA developer registration number"
+    )
+
+    # ── Flags ─────────────────────────────────────────────
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="Feature this developer prominently on the frontend",
+    )
+
+    # ── Timestamps ────────────────────────────────────────
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-is_featured', 'name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.name) or 'developer'
+            slug = base
+            i = 1
+            while Developer.objects.filter(slug=slug).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def logo(self):
+        """Return usable logo URL; prefer uploaded file, then external URL."""
+        if self.logo_file:
+            try:
+                return self.logo_file.url
+            except ValueError:
+                pass
+        return self.logo_url or ""
+
+    @property
+    def project_count(self):
+        return self.projects.count()
+
+
 class Project(models.Model):
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=500, blank=True)
     url = models.URLField(blank=True)
     sector = models.CharField(max_length=100, blank=True)
     location = models.TextField(blank=True)
-    developer = models.CharField(max_length=255, blank=True)
+    developer = models.CharField(
+        max_length=255, blank=True,
+        help_text="Legacy text field — kept for backward compatibility"
+    )
+    developer_obj = models.ForeignKey(
+        'Developer',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='projects',
+        help_text="Select from registered developers (preferred over text field)",
+    )
     rera_no = models.CharField(max_length=200, blank=True)
     rera_link = models.URLField(blank=True)
     tagline = models.TextField(blank=True)
-    hero_image_file = models.ImageField(upload_to=project_hero_upload_to, blank=True, null=True)
+    hero_image_file = models.ImageField(upload_to=project_hero_upload_to, blank=True, null=True, max_length=500)
     hero_image_url = models.URLField(blank=True)
 
     description = models.TextField(blank=True)
@@ -101,7 +191,7 @@ class ProjectImage(models.Model):
         ('all', 'All'),
     ]
     project = models.ForeignKey(Project, related_name='images', on_delete=models.CASCADE)
-    image_file = models.ImageField(upload_to=project_image_upload_to, blank=True, null=True)
+    image_file = models.ImageField(upload_to=project_image_upload_to, blank=True, null=True, max_length=500)
     image_url = models.TextField(blank=True)   # external URL
     type = models.CharField(max_length=50, choices=IMAGE_TYPE_CHOICES, default='gallery')
     order = models.PositiveIntegerField(default=0)

@@ -28,7 +28,7 @@ load_dotenv(BASE_DIR / ".env")  # ensures env vars exist for runserver too
 SECRET_KEY = 'django-insecure-p$da#km4xsc0xy0r+#s6&1#dwxmk9^^@i&1rg%6%h@p)r-z+aw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DJANGO_DEBUG', os.environ.get('DEBUG', 'False')).lower() == 'true'
 
 # ALLOWED_HOSTS for hosting
 allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '*')
@@ -36,7 +36,8 @@ if allowed_hosts_env == '*':
     ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
-
+    
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Application definition
 
@@ -179,4 +180,4 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
-
+# EOF
