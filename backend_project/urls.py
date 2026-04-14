@@ -9,13 +9,12 @@ def health(request):
     return JsonResponse({"status": "ok", "message": "API is running"})
 
 urlpatterns = [
-    path('', health),  # 👈 root endpoint
+    path('', health),  # root endpoint
     path('admin/', admin.site.urls),
     path('api/', include('listings.urls')),
-    path("api/", include("enquiries.urls")),
-    path("eoi/", include("eoi.urls")),
-
-
+    path('api/', include('enquiries.urls')),
+    path('api/', include('blogs.urls')),
+    path('eoi/', include('eoi.urls')),
 ]
 
 if settings.DEBUG:
