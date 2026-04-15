@@ -8,11 +8,6 @@ class Enquiry(models.Model):
     message = models.TextField(blank=True)
     project_id = models.CharField(max_length=100, blank=True)
 
-    # Salesforce tracking
-    sf_success = models.BooleanField(default=False)
-    sf_response = models.JSONField(null=True, blank=True)
-    sf_error = models.TextField(blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
