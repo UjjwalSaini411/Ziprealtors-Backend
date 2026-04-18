@@ -59,6 +59,12 @@ class Developer(models.Model):
         help_text="Feature this developer prominently on the frontend",
     )
 
+    # ── Rich Content (JSON) ───────────────────────────────
+    stats = models.JSONField(blank=True, default=dict, help_text="Metrics e.g. years_of_experience, area_delivered, completed_projects")
+    faqs = models.JSONField(blank=True, default=list, help_text="List of dicts: [{'question': '...', 'answer': '...'}]")
+    testimonials = models.JSONField(blank=True, default=list, help_text="List of dicts: [{'client': '...', 'feedback': '...', 'rating': 5}]")
+    acquisition_method = models.JSONField(blank=True, default=list, help_text="List of dicts: [{'title': '...', 'desc': '...'}]")
+
     # ── Timestamps ────────────────────────────────────────
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -137,6 +143,25 @@ class Project(models.Model):
         default=0,
         help_text="Number of times this project page was viewed."
     )
+
+    # ── Property specifics ────────────────────────────────
+    STATUS_CHOICES = [
+        ('under_construction', 'Under Construction'),
+        ('ready_to_move', 'Ready to Move In'),
+        ('delivered', 'Delivered'),
+    ]
+    TYPE_CHOICES = [
+        ('residential', 'Residential'),
+        ('commercial', 'Commercial'),
+        ('sco', 'SCO Plots'),
+        ('plots', 'Residential Plots'),
+    ]
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, blank=True)
+    property_type = models.CharField(max_length=50, choices=TYPE_CHOICES, blank=True)
+    project_area = models.CharField(max_length=100, blank=True, help_text="e.g. 5 Acres")
+    total_units = models.CharField(max_length=100, blank=True, help_text="e.g. 500 Units")
+    towers = models.CharField(max_length=50, blank=True, help_text="e.g. 4 Towers")
+    completion_date = models.CharField(max_length=100, blank=True, help_text="e.g. Dec 2025")
 
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)

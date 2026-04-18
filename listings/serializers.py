@@ -59,6 +59,8 @@ class DeveloperProjectSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'slug', 'name', 'location', 'sector',
             'tagline', 'hero_image', 'is_prioritized', 'view_count',
+            'status', 'property_type', 'project_area', 'total_units',
+            'towers', 'completion_date',
         ]
 
     def get_hero_image(self, obj):
@@ -81,6 +83,7 @@ class DeveloperDetailSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'logo', 'tagline', 'description',
             'established_year', 'headquarters', 'website',
             'rera_developer_id', 'is_featured',
+            'stats', 'faqs', 'testimonials', 'acquisition_method',
             'project_count', 'projects',
             'created_at', 'updated_at',
         ]
@@ -112,6 +115,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'description', 'summary', 'location_info', 'developer_info',
             'highlights', 'highlights2', 'features',
             'is_prioritized', 'view_count',
+            'status', 'property_type', 'project_area', 'total_units',
+            'towers', 'completion_date',
             'price_list', 'images',
             'created_at', 'updated_at',
         ]
